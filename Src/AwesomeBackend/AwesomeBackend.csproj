@@ -10,13 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\v2\**" />
-    <Content Remove="Models\v2\**" />
-    <EmbeddedResource Remove="Models\v2\**" />
-    <None Remove="Models\v2\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="3.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />

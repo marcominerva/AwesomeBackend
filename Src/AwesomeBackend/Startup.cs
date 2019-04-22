@@ -1,27 +1,40 @@
-﻿using AwesomeBackend.Authentication;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Mime;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using AwesomeBackend.Authentication;
 using AwesomeBackend.Authentication.Models;
 using AwesomeBackend.BusinessLayer.Services;
 using AwesomeBackend.DataAccessLayer;
 using AwesomeBackend.Documentation;
 using AwesomeBackend.Models;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace AwesomeBackend
 {
@@ -131,6 +144,39 @@ namespace AwesomeBackend
                 });
             });
 
+            // Configura la gestione degli errori secondo la RFC7807.
+            // https://codeopinion.com/http-api-problem-details-in-asp-net-core/
+            services.AddProblemDetails();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                });
+            });
+
+            services.AddHealthChecks() // Registers health check services
+                .AddAsyncCheck("sql", async () =>
+                {
+                    using (var connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            await connection.OpenAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            return HealthCheckResult.Unhealthy(ex.Message, ex);
+                        }
+                    }
+
+                    return HealthCheckResult.Healthy();
+                });
+
             // Aggiunge i servizi specifici dell'applicazione.
             services.AddScoped<IRestaurantsService, RestaurantsService>();
             services.AddScoped<IRatingsService, RatingsService>();
@@ -144,7 +190,8 @@ namespace AwesomeBackend
         /// <param name="provider">The API version descriptor provider used to enumerate defined API versions.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApiVersionDescriptionProvider provider)
         {
-            app.UseDeveloperExceptionPage();
+            // Aggiunge il middleware per gestire le eccezioni secondo la RFC7807.
+            app.UseProblemDetails();
 
             if (!env.IsDevelopment())
             {
@@ -154,6 +201,29 @@ namespace AwesomeBackend
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCors("AllowAll");
+
+            app.UseHealthChecks("/status",
+               new HealthCheckOptions
+               {
+                   ResponseWriter = async (context, report) =>
+                   {
+                       var result = JsonConvert.SerializeObject(
+                           new
+                           {
+                               status = report.Status.ToString(),
+                               details = report.Entries.Select(e => new
+                               {
+                                   service = e.Key,
+                                   status = Enum.GetName(typeof(HealthStatus), e.Value.Status),
+                                   description = e.Value.Description
+                               })
+                           });
+
+                       context.Response.ContentType = MediaTypeNames.Application.Json;
+                       await context.Response.WriteAsync(result);
+                   }
+               });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
