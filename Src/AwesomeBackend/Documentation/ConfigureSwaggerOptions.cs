@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AwesomeBackend.Documentation
 {
@@ -24,7 +19,10 @@ namespace AwesomeBackend.Documentation
         /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
         /// </summary>
         /// <param name="provider">The <see cref="IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
-        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => this.provider = provider;
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
@@ -37,9 +35,9 @@ namespace AwesomeBackend.Documentation
             }
         }
 
-        private Info CreateInfoForApiVersion(ApiVersionDescription description)
+        private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
         {
-            var info = new Info()
+            var info = new OpenApiInfo
             {
                 Title = "Awesome ASP.NET Core Backend",
                 Version = description.ApiVersion.ToString(),

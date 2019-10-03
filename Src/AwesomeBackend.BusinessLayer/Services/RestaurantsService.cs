@@ -1,5 +1,5 @@
-using AwesomeBackend.BusinessLayer.Models;
 using AwesomeBackend.BusinessLayer.Services.Common;
+using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.DataAccessLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +44,7 @@ namespace AwesomeBackend.BusinessLayer.Services
             return new ListResult<Restaurant>(data.Take(itemsPerPage), totalCount, data.Count > itemsPerPage);
         }
 
-        private Restaurant CreateRestaurantDto(Dal.Restaurant dbRestaurant)
+        private static Restaurant CreateRestaurantDto(Dal.Restaurant dbRestaurant)
         {
             return new Restaurant
             {

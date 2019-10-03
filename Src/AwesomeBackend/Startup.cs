@@ -10,20 +10,19 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -59,7 +58,7 @@ namespace AwesomeBackend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -73,9 +72,8 @@ namespace AwesomeBackend
             .AddEntityFrameworkStores<AuthenticationDbContext>();
 
             // Get JWT token settings.
-            var jwtSettings = new JwtSettings();
             var jwtSection = Configuration.GetSection(nameof(JwtSettings));
-            jwtSection.Bind(jwtSettings);
+            var jwtSettings = jwtSection.Get<JwtSettings>();
             services.Configure<JwtSettings>(jwtSection);
 
             services.AddAuthentication(options =>
@@ -118,12 +116,19 @@ namespace AwesomeBackend
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(options =>
             {
-                // add a custom operation filter which sets default values
+                // Add a custom operation filter which sets default values
                 options.OperationFilter<SwaggerDefaultValues>();
 
-                options.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Insert JWT token with the \"Bearer \" prefix", Name = "Authorization", Type = "apiKey" });
-                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                    { "Bearer", Enumerable.Empty<string>() },
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme { In = ParameterLocation.Header, Description = "Insert JWT token with the \"Bearer \" prefix", Name = "Authorization", Type = SecuritySchemeType.ApiKey });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = JwtBearerDefaults.AuthenticationScheme }
+                        },
+                        new string[0]
+                    }
                 });
 
                 // Set the comments path for the Swagger JSON and UI.
@@ -131,14 +136,13 @@ namespace AwesomeBackend
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
 
-                options.DescribeAllEnumsAsStrings();
                 options.CustomOperationIds(apiDesc =>
                 {
                     return $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{apiDesc.ActionDescriptor.RouteValues["action"]}";
                 });
             });
 
-            // Configura la gestione degli errori secondo la RFC7807.
+            // Configure error handling according to RFC7807.
             // https://codeopinion.com/http-api-problem-details-in-asp-net-core/
             services.AddProblemDetails();
 
@@ -171,7 +175,7 @@ namespace AwesomeBackend
                     return HealthCheckResult.Healthy();
                 });
 
-            // Aggiunge i servizi specifici dell'applicazione.
+            // Add service specific services.
             services.AddScoped<IRestaurantsService, RestaurantsService>();
             services.AddScoped<IRatingsService, RatingsService>();
         }
@@ -182,9 +186,9 @@ namespace AwesomeBackend
         /// <param name="app">The current application builder.</param>
         /// <param name="env">The current hosting environment.</param>
         /// <param name="provider">The API version descriptor provider used to enumerate defined API versions.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
-            // Aggiunge il middleware per gestire le eccezioni secondo la RFC7807.
+            // Add the middleware to handle errors according to RFC7807.
             app.UseProblemDetails();
 
             if (!env.IsDevelopment())
@@ -194,7 +198,10 @@ namespace AwesomeBackend
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseCors("AllowAll");
 
             app.UseHealthChecks("/status",
@@ -234,7 +241,10 @@ namespace AwesomeBackend
                 }
             });
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

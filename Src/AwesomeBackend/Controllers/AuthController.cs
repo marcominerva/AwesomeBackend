@@ -1,6 +1,7 @@
 ﻿using AwesomeBackend.Authentication.Models;
+using AwesomeBackend.Common.Models.Requests;
+using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.Models;
-using AwesomeBackend.Models.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,11 +31,11 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Effettua la registrazione dell'utente
+        /// Sign-up a new user
         /// </summary>
-        /// <param name="model">I dati per la registrazione dell'utente.</param>
-        /// <response code="200">Registrazione avvenuta con successo</response>
-        /// <response code="400">Impossibile registrare l'utente a causa di uno o più erorri dei dati di input</response>
+        /// <param name="model">The information about the registered user</param>
+        /// <response code="200">Registration completed successfully</response>
+        /// <response code="400">Unable to register the news user because of an error of input data</response>
         [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(IdentityResult), StatusCodes.Status200OK)]
@@ -65,20 +66,20 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Effettua il login
+        /// Perform a login
         /// </summary>
-        /// <param name="model">Oggetto che contiene nome utente e password per l'accesso.</param>
-        /// <returns>Se il login ha esito positivo, un oggetto che contiene il Bearer token di autenticazione.</returns>
-        /// <response code="200">Login effettuato con successo</response>
-        /// <response code="400">Impossibile effettuare il login a causa di uno o più erorri dei dati di input</response>
-        /// <response code="401">Password non valida</response>
+        /// <param name="model">Login information</param>
+        /// <returns>An object containing the Authentication Bearer Token</returns>
+        /// <response code="200">Login completed successfully</response>
+        /// <response code="400">Unable to perform login because of an error of input data</response>
+        /// <response code="401">Invalid passsword</response>
         [HttpPost()]
         [Route("token")]
-        [ProducesResponseType(typeof(AuthResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<AuthResult>> CreateToken(LoginRequest model)
+        public async Task<ActionResult<AuthResponse>> CreateToken(LoginRequest model)
         {
             var user = await userManager.FindByNameAsync(model.Email);
             if (user == null)
@@ -114,7 +115,7 @@ namespace AwesomeBackend.Controllers
                     signingCredentials: signingCredentials
                     );
 
-                var result = new AuthResult(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
+                var result = new AuthResponse(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
                 return Ok(result);
             }
 

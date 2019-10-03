@@ -1,6 +1,5 @@
 using AwesomeBackend.Authentication;
 using AwesomeBackend.DataAccessLayer.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,6 +49,9 @@ namespace AwesomeBackend.DataAccessLayer
             Set<T>().Remove(entity);
         }
 
-        public Task SaveAsync() => SaveChangesAsync();
+        public Task SaveAsync()
+        {
+            return SaveChangesAsync();
+        }
     }
 }

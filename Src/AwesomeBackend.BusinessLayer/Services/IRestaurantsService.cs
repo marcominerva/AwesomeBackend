@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AwesomeBackend.Common.Models.Responses;
+using System;
 using System.Threading.Tasks;
-using AwesomeBackend.BusinessLayer.Models;
 
 namespace AwesomeBackend.BusinessLayer.Services
 {

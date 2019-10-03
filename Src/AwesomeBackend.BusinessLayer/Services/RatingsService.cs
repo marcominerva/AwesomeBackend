@@ -1,14 +1,10 @@
-using AwesomeBackend.Authentication.Extensions;
-using AwesomeBackend.BusinessLayer.Models;
 using AwesomeBackend.BusinessLayer.Services.Common;
+using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.DataAccessLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Dal = AwesomeBackend.DataAccessLayer.Models;
 

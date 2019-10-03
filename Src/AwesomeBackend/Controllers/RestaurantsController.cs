@@ -1,6 +1,6 @@
-using AwesomeBackend.BusinessLayer.Models;
 using AwesomeBackend.BusinessLayer.Services;
-using AwesomeBackend.Models.Requests;
+using AwesomeBackend.Common.Models.Requests;
+using AwesomeBackend.Common.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +22,12 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Recupera i ristoranti, con possibilità di ottenerli in maniera paginata
+        /// Get the paginated restaurants list
         /// </summary>
-        /// <param name="pageIndex">L'indice dell pagina da ottenere</param>
-        /// <param name="itemsPerPage">Il numero di elementi ottenere</param>
-        /// <response code="200">L'elenco dei ristoranti</response>
-        /// <response code="401">Utente non autorizzato</response>
+        /// <param name="pageIndex">The index of the page to get</param>
+        /// <param name="itemsPerPage">The number of elements to get</param>
+        /// <response code="200">The restaurants list</response>
+        /// <response code="401">Unauthorized user</response>
         [HttpGet]
         [Route("")]
         [ProducesResponseType(typeof(ListResult<Restaurant>), StatusCodes.Status200OK)]
@@ -41,12 +41,12 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Recupera uno specifico ristorante
+        /// Get a specific restaurant
         /// </summary>
-        /// <param name="id">Id del ristorante da recuperare</param>
-        /// <response code="200">Il ristorante cercato</response>
-        /// <response code="401">Utente non autorizzato</response>
-        /// <response code="404">Ristorante non trovato</response>
+        /// <param name="id">Id of the restaurant to retrieve</param>
+        /// <response code="200">The desired restaurant</response>
+        /// <response code="401">Unauthorized user</response>
+        /// <response code="404">Restaurant not found</response>
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(Restaurant), StatusCodes.Status200OK)]
@@ -65,13 +65,13 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Recupera i rating del ristorante specificato, con possibilità di ottenerli in maniera paginata
+        /// Get the paginated ratings of the given restaurant
         /// </summary>
-        /// <param name="restaurantId">L'Id del ristorante</param>
-        /// <param name="pageIndex">L'indice dell pagina da ottenere</param>
-        /// <param name="itemsPerPage">Il numero di elementi ottenere</param>
-        /// <response code="200">L'elenco delle valutazioni del ristorante</response>
-        /// <response code="401">Utente non autorizzato</response>
+        /// <param name="restaurantId">Id of the restaurant</param>
+        /// <param name="pageIndex">The index of the page to get</param>
+        /// <param name="itemsPerPage">The number of elements to get</param>
+        /// <response code="200">The ratings list of the restaurant</response>
+        /// <response code="401">Unauthorized user</response>
         [HttpGet]
         [Route("{id:guid}/ratings")]
         [ProducesResponseType(typeof(ListResult<Rating>), StatusCodes.Status200OK)]
@@ -86,13 +86,13 @@ namespace AwesomeBackend.Controllers
         }
 
         /// <summary>
-        /// Invia una nuova valutazione del ristorante specificato
+        /// Send a new rating for a restaurant
         /// </summary>
-        /// <param name="restaurantId">L'Id del ristorante di cui si vuole effettuare la valutazione</param>
-        /// <param name="rating">L'oggetto che contiene le informazioni sul rating</param>
-        /// <response code="200">Il rating è stato salvato correttamente</response>
-        /// <response code="400">Impossibile salvare a causa di un errore dei dati di input</response>
-        /// <response code="401">Utente non autorizzato</response>
+        /// <param name="restaurantId">Id of the restaurant to rate</param>
+        /// <param name="rating">The rating to submit</param>
+        /// <response code="200">Rating submitted successfully</response>
+        /// <response code="400">Unable to submit the rating because of an error of input data</response>
+        /// <response code="401">Unauthorized user</response>
         [HttpPost]
         [Route("{id:guid}/ratings")]
         [ProducesResponseType(typeof(NewRating), StatusCodes.Status200OK)]

@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AwesomeBackend.Documentation
 {
@@ -21,7 +17,7 @@ namespace AwesomeBackend.Documentation
         /// </summary>
         /// <param name="operation">The operation to apply the filter to.</param>
         /// <param name="context">The current operation filter context.</param>
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var apiDescription = context.ApiDescription;
             operation.Deprecated = apiDescription.IsDeprecated();
@@ -33,7 +29,7 @@ namespace AwesomeBackend.Documentation
 
             // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/412
             // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/413
-            foreach (var parameter in operation.Parameters.OfType<NonBodyParameter>())
+            foreach (var parameter in operation.Parameters)
             {
                 var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
 
@@ -42,10 +38,10 @@ namespace AwesomeBackend.Documentation
                     parameter.Description = description.ModelMetadata?.Description;
                 }
 
-                if (parameter.Default == null)
-                {
-                    parameter.Default = description.DefaultValue;
-                }
+                //if (parameter.Default == null)
+                //{
+                //    parameter.Default = description.DefaultValue;
+                //}
 
                 parameter.Required |= description.IsRequired;
             }

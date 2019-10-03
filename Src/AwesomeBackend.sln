@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.421
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwesomeBackend", "AwesomeBackend\AwesomeBackend.csproj", "{7AFBC9FF-A694-4F37-B099-9E2E39356076}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "AwesomeBackend.Database", "AwesomeBackend.Database\AwesomeBackend.Database.sqlproj", "{9EEFCC54-1689-47FF-9064-EC4174E4E659}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwesomeBackend.Authentication", "AwesomeBackend.Authentication\AwesomeBackend.Authentication.csproj", "{AAAA1DCA-9F1C-44D9-824D-E1EF342FACF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwesomeBackend.Common", "AwesomeBackend.Common\AwesomeBackend.Common.csproj", "{5ED31202-C53B-4630-82B6-6607C80EAFBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{AAAA1DCA-9F1C-44D9-824D-E1EF342FACF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAAA1DCA-9F1C-44D9-824D-E1EF342FACF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAAA1DCA-9F1C-44D9-824D-E1EF342FACF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED31202-C53B-4630-82B6-6607C80EAFBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED31202-C53B-4630-82B6-6607C80EAFBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED31202-C53B-4630-82B6-6607C80EAFBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED31202-C53B-4630-82B6-6607C80EAFBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

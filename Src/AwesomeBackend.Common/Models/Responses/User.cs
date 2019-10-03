@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AwesomeBackend.BusinessLayer.Models
+namespace AwesomeBackend.Common.Models.Responses
 {
     public class User
     {

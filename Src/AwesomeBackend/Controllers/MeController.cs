@@ -1,5 +1,5 @@
 ﻿using AwesomeBackend.Authentication.Extensions;
-using AwesomeBackend.BusinessLayer.Models;
+using AwesomeBackend.Common.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +10,10 @@ namespace AwesomeBackend.Controllers
     public class MeController : ControllerBase
     {
         /// <summary>
-        /// Recupera le informazioni sull'utente corrente
+        /// Return information about the currently logged user
         /// </summary>
-        /// <response code="200">Le informazioni sull'utente attualmente loggato</response>
-        /// <response code="401">Utente non autorizzato</response>
+        /// <response code="200">An object containing the information about the currently logged user</response>
+        /// <response code="401">Unauthorized user</response>
         [HttpGet]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
