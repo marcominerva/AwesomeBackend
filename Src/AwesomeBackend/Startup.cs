@@ -20,7 +20,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
@@ -204,28 +203,6 @@ namespace AwesomeBackend
 
             app.UseCors("AllowAll");
 
-            app.UseHealthChecks("/status",
-               new HealthCheckOptions
-               {
-                   ResponseWriter = async (context, report) =>
-                   {
-                       var result = JsonConvert.SerializeObject(
-                           new
-                           {
-                               status = report.Status.ToString(),
-                               details = report.Entries.Select(e => new
-                               {
-                                   service = e.Key,
-                                   status = Enum.GetName(typeof(HealthStatus), e.Value.Status),
-                                   description = e.Value.Description
-                               })
-                           });
-
-                       context.Response.ContentType = MediaTypeNames.Application.Json;
-                       await context.Response.WriteAsync(result);
-                   }
-               });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -244,6 +221,28 @@ namespace AwesomeBackend
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapHealthChecks("/status",
+                   new HealthCheckOptions
+                   {
+                       ResponseWriter = async (context, report) =>
+                       {
+                           var result = System.Text.Json.JsonSerializer.Serialize(
+                               new
+                               {
+                                   status = report.Status.ToString(),
+                                   details = report.Entries.Select(e => new
+                                   {
+                                       service = e.Key,
+                                       status = Enum.GetName(typeof(HealthStatus), e.Value.Status),
+                                       description = e.Value.Description
+                                   })
+                               });
+
+                           context.Response.ContentType = MediaTypeNames.Application.Json;
+                           await context.Response.WriteAsync(result);
+                       }
+                   });
             });
         }
     }
