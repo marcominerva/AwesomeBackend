@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace AwesomeBackend.Controllers
 {
     [Authorize]
+    [ApiVersion("1.0")]
     public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantsService restaurantsService;
@@ -100,6 +101,27 @@ namespace AwesomeBackend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<NewRating>> Rate([FromRoute(Name = "id")] Guid restaurantId, RatingRequest rating)
+        {
+            var result = await ratingsService.RateAsync(restaurantId, rating.Score, rating.Comment);
+            return result;
+        }
+
+        /// <summary>
+        /// Send a new rating for a restaurant
+        /// </summary>
+        /// <param name="restaurantId">Id of the restaurant to rate</param>
+        /// <param name="rating">The rating to submit</param>
+        /// <response code="200">Rating submitted successfully</response>
+        /// <response code="400">Unable to submit the rating because of an error of input data</response>
+        /// <response code="401">Unauthorized user</response>
+        [HttpPost]
+        [Route("{id:guid}/ratings")]
+        [ProducesResponseType(typeof(NewRating), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesDefaultResponseType]
+        [ApiVersion("2.0")]
+        public async Task<ActionResult<NewRating>> RateV2([FromRoute(Name = "id")] Guid restaurantId, Common.Models.Requests.V2.RatingRequest rating)
         {
             var result = await ratingsService.RateAsync(restaurantId, rating.Score, rating.Comment);
             return result;

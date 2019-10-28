@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -145,6 +144,22 @@ namespace AwesomeBackend
             // https://codeopinion.com/http-api-problem-details-in-asp-net-core/
             services.AddProblemDetails();
 
+            services.AddHealthChecks() // Registers health check services
+                .AddAsyncCheck("sql", async () =>
+                {
+                    try
+                    {
+                        using var connection = new SqlConnection(connectionString);
+                        await connection.OpenAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        return HealthCheckResult.Unhealthy(ex.Message, ex);
+                    }
+
+                    return HealthCheckResult.Healthy();
+                });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
@@ -155,24 +170,6 @@ namespace AwesomeBackend
                     builder.AllowAnyMethod();
                 });
             });
-
-            services.AddHealthChecks() // Registers health check services
-                .AddAsyncCheck("sql", async () =>
-                {
-                    using (var connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            await connection.OpenAsync();
-                        }
-                        catch (Exception ex)
-                        {
-                            return HealthCheckResult.Unhealthy(ex.Message, ex);
-                        }
-                    }
-
-                    return HealthCheckResult.Healthy();
-                });
 
             // Add service specific services.
             services.AddScoped<IRestaurantsService, RestaurantsService>();
@@ -189,12 +186,6 @@ namespace AwesomeBackend
         {
             // Add the middleware to handle errors according to RFC7807.
             app.UseProblemDetails();
-
-            if (!env.IsDevelopment())
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
 
             app.UseHttpsRedirection();
             app.UseRouting();
