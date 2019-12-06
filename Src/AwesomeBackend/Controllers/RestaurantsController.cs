@@ -29,8 +29,7 @@ namespace AwesomeBackend.Controllers
         /// <param name="itemsPerPage">The number of elements to get</param>
         /// <response code="200">The restaurants list</response>
         /// <response code="401">Unauthorized user</response>
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ListResult<Restaurant>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
@@ -48,8 +47,7 @@ namespace AwesomeBackend.Controllers
         /// <response code="200">The desired restaurant</response>
         /// <response code="401">Unauthorized user</response>
         /// <response code="404">Restaurant not found</response>
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(Restaurant), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,8 +71,7 @@ namespace AwesomeBackend.Controllers
         /// <param name="itemsPerPage">The number of elements to get</param>
         /// <response code="200">The ratings list of the restaurant</response>
         /// <response code="401">Unauthorized user</response>
-        [HttpGet]
-        [Route("{id:guid}/ratings")]
+        [HttpGet("{id:guid}/ratings")]
         [ProducesResponseType(typeof(ListResult<Rating>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
@@ -94,8 +91,7 @@ namespace AwesomeBackend.Controllers
         /// <response code="200">Rating submitted successfully</response>
         /// <response code="400">Unable to submit the rating because of an error of input data</response>
         /// <response code="401">Unauthorized user</response>
-        [HttpPost]
-        [Route("{id:guid}/ratings")]
+        [HttpPost("{id:guid}/ratings")]
         [ProducesResponseType(typeof(NewRating), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -114,8 +110,7 @@ namespace AwesomeBackend.Controllers
         /// <response code="200">Rating submitted successfully</response>
         /// <response code="400">Unable to submit the rating because of an error of input data</response>
         /// <response code="401">Unauthorized user</response>
-        [HttpPost]
-        [Route("{id:guid}/ratings")]
+        [HttpPost("{id:guid}/ratings")]
         [ProducesResponseType(typeof(NewRating), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -24,7 +24,7 @@ namespace AwesomeBackend.BusinessLayer.Services
 
             var data = await query.Include(r => r.User)
                 .OrderByDescending(s => s.Date)
-                .Skip(pageIndex * itemsPerPage).Take(itemsPerPage + 1)      // Prova a prendere un elemento in più di quelli richiesti per controllare se ci sono pagine successive.
+                .Skip(pageIndex * itemsPerPage).Take(itemsPerPage + 1)      // Try to retrieve an element more than the requested number to check whether there are more data.
                 .Select(dbRating => new Rating
                 {
                     Id = dbRating.Id,
@@ -39,7 +39,7 @@ namespace AwesomeBackend.BusinessLayer.Services
 
         public async Task<NewRating> RateAsync(Guid restaurantId, double score, string comment)
         {
-            // Salva la valutazione sul database.
+            // Saves the new rating to the database.
             var dbRating = new Dal.Rating
             {
                 RestaurantId = restaurantId,
@@ -52,8 +52,8 @@ namespace AwesomeBackend.BusinessLayer.Services
             DataContext.Insert(dbRating);
             await DataContext.SaveAsync();
 
-            // Recupera la nuova media dei voti del ristorante.
-            var averageScore = DataContext.GetData<Dal.Rating>().Where(r => r.RestaurantId == restaurantId).Average(r => r.Score);
+            // Retrieves the new average rating for the restaurant.
+            var averageScore = await DataContext.GetData<Dal.Rating>().Where(r => r.RestaurantId == restaurantId).AverageAsync(r => r.Score);
             var result = new NewRating(restaurantId, Math.Round(averageScore, 2));
             return result;
         }

@@ -37,7 +37,7 @@ namespace AwesomeBackend.BusinessLayer.Services
             var data = await query.Include(r => r.Ratings)
                 .OrderBy(r => r.Name)
                 //.OrderByDescending(r => r.Ratings.Select(rating => rating.Score).DefaultIfEmpty(0).Average())
-                .Skip(pageIndex * itemsPerPage).Take(itemsPerPage + 1)      // Prova a prendere un elemento in più di quelli richiesti per controllare se ci sono pagine successive.
+                .Skip(pageIndex * itemsPerPage).Take(itemsPerPage + 1)      // Try to retrieve an element more than the requested number to check whether there are more data.
                 .Select(dbRestaurant => CreateRestaurantDto(dbRestaurant))
                 .ToListAsync();
 
