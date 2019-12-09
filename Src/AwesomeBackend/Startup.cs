@@ -188,11 +188,6 @@ namespace AwesomeBackend
             app.UseProblemDetails();
 
             app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseCors("AllowAll");
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -208,6 +203,15 @@ namespace AwesomeBackend
                     options.RoutePrefix = string.Empty;
                 }
             });
+
+            // Add the EndpointRoutingMiddleware.
+            app.UseRouting();
+
+            // All middleware from here onwards know which endpoint will be invoked.
+            app.UseCors("AllowAll");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
