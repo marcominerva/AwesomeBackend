@@ -20,13 +20,13 @@ namespace AwesomeBackend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly IPasswordHasher<ApplicationUser> passwordHasher;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly JwtSettings jwtSettings;
 
-        public AuthController(UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher, IOptions<JwtSettings> jwtSettings)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JwtSettings> jwtSettings)
         {
             this.userManager = userManager;
-            this.passwordHasher = passwordHasher;
+            this.signInManager = signInManager;
             this.jwtSettings = jwtSettings.Value;
         }
 
@@ -71,53 +71,48 @@ namespace AwesomeBackend.Controllers
         /// <returns>An object containing the Authentication Bearer Token</returns>
         /// <response code="200">Login completed successfully</response>
         /// <response code="400">Unable to perform login because of an error of input data</response>
-        /// <response code="401">Invalid passsword</response>
         [HttpPost("token")]
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<AuthResponse>> CreateToken(LoginRequest model)
         {
-            var user = await userManager.FindByNameAsync(model.Email);
-            if (user == null)
+            var signInResult = await signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+            if (!signInResult.Succeeded)
             {
                 return BadRequest();
             }
 
-            if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) == PasswordVerificationResult.Success)
-            {
-                var userClaims = await userManager.GetClaimsAsync(user);
-                var userRoles = await userManager.GetRolesAsync(user);
+            var user = await userManager.FindByNameAsync(model.Email);
+            var userClaims = await userManager.GetClaimsAsync(user);
+            var userRoles = await userManager.GetRolesAsync(user);
 
-                var claims = new[]
-                {
+            var claims = new[]
+            {
                         new Claim(JwtRegisteredClaimNames.Sid, user.Id.ToString()),
                         new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(ClaimTypes.Name, user.UserName),
                         new Claim(JwtRegisteredClaimNames.Email, user.Email),
                         new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
                         new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? string.Empty)
                     }.Union(userRoles.Select(role => new Claim(ClaimTypes.Role, role)))
-                .Union(userClaims);
+            .Union(userClaims);
 
-                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey));
-                var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-                var jwtSecurityToken = new JwtSecurityToken(
-                    issuer: jwtSettings.Issuer,
-                    audience: jwtSettings.Audience,
-                    claims: claims,
-                    notBefore: DateTime.UtcNow,
-                    expires: DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationMinutes),
-                    signingCredentials: signingCredentials
-                    );
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: jwtSettings.Issuer,
+                audience: jwtSettings.Audience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationMinutes),
+                signingCredentials: signingCredentials
+                );
 
-                var result = new AuthResponse(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
-                return Ok(result);
-            }
-
-            return Unauthorized();
+            var result = new AuthResponse(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
+            return Ok(result);
         }
     }
 }
