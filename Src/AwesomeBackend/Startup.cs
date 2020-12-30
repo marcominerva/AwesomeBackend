@@ -62,8 +62,14 @@ namespace AwesomeBackend
                 });
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options => options.UseSqlServer(connectionString));
             services.AddDbContext<AuthenticationDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, providerOptions =>
+                {
+                    providerOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                });
+            });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(setup =>
             {

@@ -35,23 +35,14 @@ namespace AwesomeBackend.DataAccessLayer
             return set.AsNoTracking();
         }
 
-        public void Insert<T>(T entity) where T : class
-        {
-            Set<T>().Add(entity);
-        }
+        public void Insert<T>(T entity) where T : class => Set<T>().Add(entity);
 
         void IApplicationDbContext.Update<T>(T entity)
         {
         }
 
-        public void Delete<T>(T entity) where T : class
-        {
-            Set<T>().Remove(entity);
-        }
+        public void Delete<T>(T entity) where T : class => Set<T>().Remove(entity);
 
-        public Task SaveAsync()
-        {
-            return SaveChangesAsync();
-        }
+        public Task SaveAsync() => SaveChangesAsync();
     }
 }
