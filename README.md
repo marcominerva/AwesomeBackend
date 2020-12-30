@@ -1,5 +1,5 @@
 # Awesome Backend
-A sample API backend made with ASP.NET Core. It showcases the following features:
+A sample API backend made with ASP.NET Core 5.0. It showcases the following features:
 
 1. Authorization with JWT
 2. Data access with Entity Framework Core
