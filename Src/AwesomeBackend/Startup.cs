@@ -26,6 +26,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace AwesomeBackend
 {
@@ -38,10 +39,7 @@ namespace AwesomeBackend
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="configuration">The current configuration.</param>
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         /// <summary>
         /// Gets the current configuration.
@@ -56,7 +54,12 @@ namespace AwesomeBackend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddControllers();
+
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+                });
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -89,7 +92,8 @@ namespace AwesomeBackend
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(jwtSettings.SecurityKey)),
-                    LifetimeValidator = (DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters) => DateTime.UtcNow < expires.GetValueOrDefault(),
+                    RequireExpirationTime = true,
+                    //ClockSkew = TimeSpan.Zero // Default is 5 minutes
                 };
             });
 
@@ -117,15 +121,26 @@ namespace AwesomeBackend
                 // Add a custom operation filter which sets default values
                 options.OperationFilter<SwaggerDefaultValues>();
 
-                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme { In = ParameterLocation.Header, Description = "Insert JWT token with the \"Bearer \" prefix", Name = "Authorization", Type = SecuritySchemeType.ApiKey });
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Insert JWT token with the \"Bearer \" prefix",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = JwtBearerDefaults.AuthenticationScheme }
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
                         },
-                        new string[0]
+                        Array.Empty<string>()
                     }
                 });
 
@@ -134,10 +149,8 @@ namespace AwesomeBackend
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
 
-                options.CustomOperationIds(apiDesc =>
-                {
-                    return $"{apiDesc.ActionDescriptor.RouteValues["controller"]}_{apiDesc.ActionDescriptor.RouteValues["action"]}";
-                });
+                options.CustomOperationIds(api => $"{api.ActionDescriptor.RouteValues["controller"]}_{api.ActionDescriptor.RouteValues["action"]}");
+                options.UseAllOfToExtendReferenceSchemas();
             });
 
             // Configure error handling according to RFC7807.
@@ -162,8 +175,7 @@ namespace AwesomeBackend
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
-                builder =>
+                options.AddDefaultPolicy(builder =>
                 {
                     builder.AllowAnyOrigin();
                     builder.AllowAnyHeader();
@@ -208,7 +220,7 @@ namespace AwesomeBackend
             app.UseRouting();
 
             // All middleware from here onwards know which endpoint will be invoked.
-            app.UseCors("AllowAll");
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

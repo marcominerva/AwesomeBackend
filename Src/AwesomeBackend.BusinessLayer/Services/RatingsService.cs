@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Dal = AwesomeBackend.DataAccessLayer.Models;
+using Entities = AwesomeBackend.DataAccessLayer.Models;
 
 namespace AwesomeBackend.BusinessLayer.Services
 {
@@ -19,7 +19,7 @@ namespace AwesomeBackend.BusinessLayer.Services
 
         public async Task<ListResult<Rating>> GetAsync(Guid restaurantId, int pageIndex, int itemsPerPage)
         {
-            var query = DataContext.GetData<Dal.Rating>().Where(r => r.RestaurantId == restaurantId);
+            var query = DataContext.GetData<Entities.Rating>().Where(r => r.RestaurantId == restaurantId);
             var totalCount = await query.LongCountAsync();
 
             var data = await query.Include(r => r.User)
@@ -40,7 +40,7 @@ namespace AwesomeBackend.BusinessLayer.Services
         public async Task<NewRating> RateAsync(Guid restaurantId, double score, string comment)
         {
             // Saves the new rating to the database.
-            var dbRating = new Dal.Rating
+            var dbRating = new Entities.Rating
             {
                 RestaurantId = restaurantId,
                 Score = score,
@@ -53,7 +53,7 @@ namespace AwesomeBackend.BusinessLayer.Services
             await DataContext.SaveAsync();
 
             // Retrieves the new average rating for the restaurant.
-            var averageScore = await DataContext.GetData<Dal.Rating>().Where(r => r.RestaurantId == restaurantId).AverageAsync(r => r.Score);
+            var averageScore = await DataContext.GetData<Entities.Rating>().Where(r => r.RestaurantId == restaurantId).AverageAsync(r => r.Score);
             var result = new NewRating(restaurantId, Math.Round(averageScore, 2));
             return result;
         }

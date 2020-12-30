@@ -20,7 +20,7 @@ namespace AwesomeBackend.Controllers
         [ProducesDefaultResponseType]
         public ActionResult<User> Get()
         {
-            // Recupera le informazioni dell'utente corrente dai claim.
+            // Get User information from claims
             return new User
             {
                 Id = User.GetId(),

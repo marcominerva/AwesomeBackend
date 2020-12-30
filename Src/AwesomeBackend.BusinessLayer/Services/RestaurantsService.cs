@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Dal = AwesomeBackend.DataAccessLayer.Models;
+using Entities = AwesomeBackend.DataAccessLayer.Models;
 
 namespace AwesomeBackend.BusinessLayer.Services
 {
@@ -19,7 +19,7 @@ namespace AwesomeBackend.BusinessLayer.Services
 
         public async Task<Restaurant> GetAsync(Guid id)
         {
-            var dbRestaurant = await DataContext.GetData<Dal.Restaurant>().Include(r => r.Ratings).FirstOrDefaultAsync(v => v.Id == id);
+            var dbRestaurant = await DataContext.GetData<Entities.Restaurant>().Include(r => r.Ratings).FirstOrDefaultAsync(v => v.Id == id);
             if (dbRestaurant != null)
             {
                 var restaurant = CreateRestaurantDto(dbRestaurant);
@@ -31,7 +31,7 @@ namespace AwesomeBackend.BusinessLayer.Services
 
         public async Task<ListResult<Restaurant>> GetAsync(int pageIndex, int itemsPerPage)
         {
-            var query = DataContext.GetData<Dal.Restaurant>();
+            var query = DataContext.GetData<Entities.Restaurant>();
             var totalCount = await query.LongCountAsync();
 
             var data = await query.Include(r => r.Ratings)
@@ -44,7 +44,7 @@ namespace AwesomeBackend.BusinessLayer.Services
             return new ListResult<Restaurant>(data.Take(itemsPerPage), totalCount, data.Count > itemsPerPage);
         }
 
-        private static Restaurant CreateRestaurantDto(Dal.Restaurant dbRestaurant)
+        private static Restaurant CreateRestaurantDto(Entities.Restaurant dbRestaurant)
         {
             return new Restaurant
             {

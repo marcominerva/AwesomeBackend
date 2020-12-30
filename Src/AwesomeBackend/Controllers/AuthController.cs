@@ -88,16 +88,16 @@ namespace AwesomeBackend.Controllers
             var userRoles = await userManager.GetRolesAsync(user);
 
             var claims = new[]
-            {
-                        new Claim(JwtRegisteredClaimNames.Sid, user.Id.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(ClaimTypes.Name, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                        new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
-                        new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? string.Empty)
-                    }.Union(userRoles.Select(role => new Claim(ClaimTypes.Role, role)))
-            .Union(userClaims);
+                {
+                    new Claim(JwtRegisteredClaimNames.Sid, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+                    new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? string.Empty)
+                }.Union(userRoles.Select(role => new Claim(ClaimTypes.Role, role)))
+                .Union(userClaims);
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey));
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
