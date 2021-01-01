@@ -3,6 +3,7 @@ using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.DataAccessLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,15 +13,19 @@ namespace AwesomeBackend.BusinessLayer.Services
 {
     public class RatingsService : BaseService, IRatingsService
     {
-        public RatingsService(IApplicationDbContext dataContext, IHttpContextAccessor httpContextAccessor, IServiceProvider serviceProvider)
-            : base(dataContext, httpContextAccessor, serviceProvider)
+        public RatingsService(IApplicationDbContext dataContext, IHttpContextAccessor httpContextAccessor, ILogger<RatingsService> logger, IServiceProvider serviceProvider)
+            : base(dataContext, httpContextAccessor, logger, serviceProvider)
         {
         }
 
         public async Task<ListResult<Rating>> GetAsync(Guid restaurantId, int pageIndex, int itemsPerPage)
         {
+            Logger.LogDebug("Trying to retrieve {ItemsCount} ratings for restaurants with Id {RestaurantId}...", itemsPerPage, restaurantId);
+
             var query = DataContext.GetData<Entities.Rating>().Where(r => r.RestaurantId == restaurantId);
             var totalCount = await query.LongCountAsync();
+
+            Logger.LogDebug("Found {ItemsCounts} ratings", totalCount);
 
             var data = await query.Include(r => r.User)
                 .OrderByDescending(s => s.Date)

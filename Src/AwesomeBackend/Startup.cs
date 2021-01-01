@@ -87,7 +87,8 @@ namespace AwesomeBackend
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(configureOptions =>
+            })
+            .AddJwtBearer(configureOptions =>
             {
                 configureOptions.TokenValidationParameters = new TokenValidationParameters
                 {

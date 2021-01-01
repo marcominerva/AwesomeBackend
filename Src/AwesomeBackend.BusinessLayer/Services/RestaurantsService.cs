@@ -3,6 +3,7 @@ using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.DataAccessLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,27 +13,32 @@ namespace AwesomeBackend.BusinessLayer.Services
 {
     public class RestaurantsService : BaseService, IRestaurantsService
     {
-        public RestaurantsService(IApplicationDbContext dataContext, IHttpContextAccessor httpContextAccessor, IServiceProvider serviceProvider)
-            : base(dataContext, httpContextAccessor, serviceProvider)
+        public RestaurantsService(IApplicationDbContext dataContext, IHttpContextAccessor httpContextAccessor, ILogger<RestaurantsService> logger, IServiceProvider serviceProvider)
+            : base(dataContext, httpContextAccessor, logger, serviceProvider)
         {
         }
 
         public async Task<Restaurant> GetAsync(Guid id)
         {
             var dbRestaurant = await DataContext.GetData<Entities.Restaurant>().Include(r => r.Ratings).FirstOrDefaultAsync(v => v.Id == id);
-            if (dbRestaurant != null)
+            if (dbRestaurant == null)
             {
-                var restaurant = CreateRestaurantDto(dbRestaurant);
-                return restaurant;
+                Logger.LogInformation("Unable to find restaurant with Id {RestaturantId}", id);
+                return null;
             }
 
-            return null;
+            var restaurant = CreateRestaurantDto(dbRestaurant);
+            return restaurant;
         }
 
         public async Task<ListResult<Restaurant>> GetAsync(int pageIndex, int itemsPerPage)
         {
+            Logger.LogDebug("Trying to retrieve {ItemsCount} restaurants...", itemsPerPage);
+
             var query = DataContext.GetData<Entities.Restaurant>();
             var totalCount = await query.LongCountAsync();
+
+            Logger.LogDebug("Found {ItemsCounts} restaurants", totalCount);
 
             var data = await query.Include(r => r.Ratings)
                 .OrderBy(r => r.Name)
