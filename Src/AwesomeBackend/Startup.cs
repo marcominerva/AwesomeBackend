@@ -62,7 +62,6 @@ namespace AwesomeBackend
                 });
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<AuthenticationDbContext>(options => options.UseSqlServer(connectionString));
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(connectionString, providerOptions =>
@@ -71,6 +70,7 @@ namespace AwesomeBackend
                 });
             });
 
+            services.AddDbContext<AuthenticationDbContext>(options => options.UseSqlServer(connectionString));
             services.AddIdentity<ApplicationUser, ApplicationRole>(setup =>
             {
                 setup.Password.RequiredLength = 6;
