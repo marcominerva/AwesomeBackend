@@ -5,6 +5,7 @@ using AwesomeBackend.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -22,12 +23,14 @@ namespace AwesomeBackend.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly JwtSettings jwtSettings;
+        private readonly ILogger logger;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JwtSettings> jwtSettings)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JwtSettings> jwtSettingsOptions, ILogger<AuthController> logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.jwtSettings = jwtSettings.Value;
+            jwtSettings = jwtSettingsOptions.Value;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace AwesomeBackend.Controllers
 
             foreach (var error in result.Errors)
             {
+                logger.LogError("Registrazione fallita per l'utente {UserName}", model.Email);
                 ModelState.AddModelError("error", error.Description);
             }
 
@@ -80,6 +84,7 @@ namespace AwesomeBackend.Controllers
             var signInResult = await signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
             if (!signInResult.Succeeded)
             {
+                logger.LogWarning("Accesso non riuscito per l'utente {UserName}", model.Email);
                 return BadRequest();
             }
 
