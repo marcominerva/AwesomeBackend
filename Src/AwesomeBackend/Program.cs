@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace AwesomeBackend
 {
@@ -15,6 +16,14 @@ namespace AwesomeBackend
                 {
                     builder.AddJsonFile("appsettings.local.json", optional: true);
                 })
+                .UseSerilog((hostingContext, loggerConfiguration) =>
+                {
+                    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+                })
+                //.ConfigureLogging(logging =>
+                //{
+                //    logging.AddNotepad();
+                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

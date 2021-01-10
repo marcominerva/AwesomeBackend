@@ -19,6 +19,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
@@ -222,6 +223,8 @@ namespace AwesomeBackend
                     options.RoutePrefix = string.Empty;
                 }
             });
+
+            app.UseSerilogRequestLogging();
 
             // Add the EndpointRoutingMiddleware.
             app.UseRouting();
