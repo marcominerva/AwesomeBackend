@@ -1,6 +1,6 @@
 using AwesomeBackend.BusinessLayer.Services;
-using AwesomeBackend.Common.Models.Requests;
-using AwesomeBackend.Common.Models.Responses;
+using AwesomeBackend.Shared.Models.Requests;
+using AwesomeBackend.Shared.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -116,7 +116,7 @@ namespace AwesomeBackend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
         [ApiVersion("2.0")]
-        public async Task<ActionResult<NewRating>> RateV2([FromRoute(Name = "id")] Guid restaurantId, Common.Models.Requests.V2.RatingRequest rating)
+        public async Task<ActionResult<NewRating>> RateV2([FromRoute(Name = "id")] Guid restaurantId, Shared.Models.Requests.V2.RatingRequest rating)
         {
             var result = await ratingsService.RateAsync(restaurantId, rating.Score, rating.Comment);
             return result;

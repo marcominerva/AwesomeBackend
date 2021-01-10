@@ -1,13 +1,9 @@
 ﻿using AwesomeBackend.Authentication.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AwesomeBackend.DataAccessLayer.Models
+namespace AwesomeBackend.DataAccessLayer.Entities
 {
     [Table("Ratings")]
     public class Rating

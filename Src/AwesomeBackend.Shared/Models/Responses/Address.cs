@@ -1,4 +1,4 @@
-﻿namespace AwesomeBackend.Common.Models.Responses
+﻿namespace AwesomeBackend.Shared.Models.Responses
 {
     public class Address
     {

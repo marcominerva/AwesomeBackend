@@ -10,8 +10,11 @@
 	[Email] [nvarchar](255) NULL,
 	[WebSite] [nvarchar](255) NULL,
 	[CreatedAt] [datetime2] NOT NULL,
- CONSTRAINT [PK_dbo.Owners] PRIMARY KEY CLUSTERED
+ CONSTRAINT [PK_Restaurants] PRIMARY KEY CLUSTERED
 (
 	[Id] ASC
 ))
+GO
+
+ALTER TABLE [dbo].[Restaurants] ADD  CONSTRAINT [DF_Restaurants_CreatedAt]  DEFAULT (GETUTCDATE()) FOR [CreatedAt]
 GO

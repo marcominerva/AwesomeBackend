@@ -1,8 +1,8 @@
-﻿using AwesomeBackend.Common.Validation;
+﻿using AwesomeBackend.Shared.Validation;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AwesomeBackend.Common.Models.Requests.V2
+namespace AwesomeBackend.Shared.Models.Requests.V2
 {
     public class RatingRequest
     {

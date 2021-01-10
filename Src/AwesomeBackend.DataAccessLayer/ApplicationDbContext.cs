@@ -1,5 +1,5 @@
 using AwesomeBackend.Authentication;
-using AwesomeBackend.DataAccessLayer.Models;
+using AwesomeBackend.DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;

@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AwesomeBackend.Common\AwesomeBackend.Common.csproj" />
+    <ProjectReference Include="..\AwesomeBackend.Shared\AwesomeBackend.Shared.csproj" />
     <ProjectReference Include="..\AwesomeBackend.DataAccessLayer\AwesomeBackend.DataAccessLayer.csproj" />
   </ItemGroup>
 

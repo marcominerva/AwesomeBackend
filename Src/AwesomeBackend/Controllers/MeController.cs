@@ -1,5 +1,5 @@
 ﻿using AwesomeBackend.Authentication.Extensions;
-using AwesomeBackend.Common.Models.Responses;
+using AwesomeBackend.Shared.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

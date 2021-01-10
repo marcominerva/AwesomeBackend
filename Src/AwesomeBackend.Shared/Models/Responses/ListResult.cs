@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AwesomeBackend.Common.Models.Responses
+namespace AwesomeBackend.Shared.Models.Responses
 {
     public class ListResult<T>
     {

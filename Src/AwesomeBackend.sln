@@ -13,7 +13,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "AwesomeBackend.Database", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwesomeBackend.Authentication", "AwesomeBackend.Authentication\AwesomeBackend.Authentication.csproj", "{AAAA1DCA-9F1C-44D9-824D-E1EF342FACF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwesomeBackend.Common", "AwesomeBackend.Common\AwesomeBackend.Common.csproj", "{5ED31202-C53B-4630-82B6-6607C80EAFBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwesomeBackend.Shared", "AwesomeBackend.Shared\AwesomeBackend.Shared.csproj", "{5ED31202-C53B-4630-82B6-6607C80EAFBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

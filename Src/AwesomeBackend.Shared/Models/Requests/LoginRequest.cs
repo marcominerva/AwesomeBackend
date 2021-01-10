@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AwesomeBackend.Common.Models.Requests
+namespace AwesomeBackend.Shared.Models.Requests
 {
     public class LoginRequest
     {

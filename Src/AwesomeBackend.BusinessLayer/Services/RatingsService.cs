@@ -1,13 +1,13 @@
 using AwesomeBackend.BusinessLayer.Services.Common;
-using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.DataAccessLayer;
+using AwesomeBackend.Shared.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Entities = AwesomeBackend.DataAccessLayer.Models;
+using Entities = AwesomeBackend.DataAccessLayer.Entities;
 
 namespace AwesomeBackend.BusinessLayer.Services
 {

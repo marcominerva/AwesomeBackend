@@ -1,7 +1,7 @@
 ﻿using AwesomeBackend.Authentication.Models;
-using AwesomeBackend.Common.Models.Requests;
-using AwesomeBackend.Common.Models.Responses;
 using AwesomeBackend.Models;
+using AwesomeBackend.Shared.Models.Requests;
+using AwesomeBackend.Shared.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +61,7 @@ namespace AwesomeBackend.Controllers
 
             foreach (var error in result.Errors)
             {
-                logger.LogError("Registrazione fallita per l'utente {UserName}", model.Email);
+                logger.LogError("Registration failed for user {UserName}", model.Email);
                 ModelState.AddModelError("error", error.Description);
             }
 
@@ -84,7 +84,7 @@ namespace AwesomeBackend.Controllers
             var signInResult = await signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
             if (!signInResult.Succeeded)
             {
-                logger.LogWarning("Accesso non riuscito per l'utente {UserName}", model.Email);
+                logger.LogWarning("Access failed for user {UserName}", model.Email);
                 return BadRequest();
             }
 

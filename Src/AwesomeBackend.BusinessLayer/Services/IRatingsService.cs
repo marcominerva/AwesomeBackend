@@ -1,4 +1,4 @@
-﻿using AwesomeBackend.Common.Models.Responses;
+﻿using AwesomeBackend.Shared.Models.Responses;
 using System;
 using System.Threading.Tasks;
 

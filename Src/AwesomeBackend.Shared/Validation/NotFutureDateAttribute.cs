@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
-namespace AwesomeBackend.Common.Validation
+namespace AwesomeBackend.Shared.Validation
 {
     public class NotFutureDateAttribute : ValidationAttribute
     {
