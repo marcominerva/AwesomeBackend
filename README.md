@@ -7,5 +7,6 @@ A sample API backend made with ASP.NET Core 5.0. It showcases the following feat
 4. API versioning
 5. Health Checks and Problem Details
 6. CORS
+7. Logging with Serilog
 
 
