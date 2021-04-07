@@ -24,7 +24,5 @@ namespace AwesomeBackend.Shared.Models.Responses
             TotalCount = totalCount;
             HasNextPage = hasNextPage;
         }
-
-        public static ListResult<T> Empty => new ListResult<T>(new List<T>());
     }
 }
